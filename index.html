@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT 기출 어휘 통합 학습장 (다크모드 & 신자체 지원)</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #64748b;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --success-text: #065f46;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --warning-text: #92400e;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --danger-text: #991b1b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-back-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            --surface-sub: #f1f5f9;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --kbd-bg: #f1f5f9;
+            --kbd-border: #cbd5e1;
+            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 다크모드 색상 변수 */
+        body.dark-mode {
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --primary-light: rgba(129, 140, 248, 0.16);
+            --secondary: #94a3b8;
+            --success: #34d399;
+            --success-light: rgba(16, 185, 129, 0.18);
+            --success-text: #6ee7b7;
+            --warning: #fbbf24;
+            --warning-light: rgba(245, 158, 11, 0.18);
+            --warning-text: #fcd34d;
+            --danger: #f87171;
+            --danger-light: rgba(239, 68, 68, 0.18);
+            --danger-text: #fca5a5;
+            --bg: #0b1120;
+            --card-bg: #1e293b;
+            --card-back-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            --surface-sub: #0f172a;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --border: #334155;
+            --kbd-bg: #0f172a;
+            --kbd-border: #475569;
+            --shadow: 0 4px 10px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 12px 28px -5px rgba(0, 0, 0, 0.55);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 60px;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* 일본어 한자/요미가나 전용 폰트 클래스 (일본 신자체 강제 렌더링) */
+        .jp-text {
+            font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans JP", sans-serif !important;
+            font-feature-settings: "jp04" 1;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: white;
+            padding: 24px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        body.dark-mode header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #1e3a8a 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .app-title h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-title p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header-right {
+                align-items: flex-start;
+                width: 100%;
+            }
+        }
+
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.32);
+            transform: translateY(-1px);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(8px);
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 16px;
+            display: grid;
+            grid-template-columns: 1fr 290px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .filter-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-right: 4px;
+        }
+
+        select.filter-select {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background-color: var(--surface-sub);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .btn-fav-filter {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface-sub);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-fav-filter.active {
+            background: var(--warning-light);
+            border-color: var(--warning);
+            color: var(--warning-text);
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 6px;
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+        }
+
+        body.dark-mode .tab-btn.active {
+            color: #0f172a;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 플래시카드 스타일 */
+        .fc-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .mode-toggle-btn, .action-btn {
+            padding: 9px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            transition: all 0.15s;
+        }
+
+        .mode-toggle-btn:hover, .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .fc-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .fc-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .fc-scene {
+            perspective: 1200px;
+            width: 100%;
+            height: 360px;
+            margin-bottom: 20px;
+        }
+
+        .fc-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .fc-card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .fc-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 20px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+
+        .fc-face-back {
+            transform: rotateY(180deg);
+            background: var(--card-back-bg);
+            border-color: var(--primary);
+        }
+
+        .fc-top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .badges-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .badge-year {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .badge-dup {
+            background: var(--danger-light);
+            color: var(--danger-text);
+            border: 1px solid var(--danger);
+        }
+
+        .badge-status-memorized { background: var(--success-light); color: var(--success-text); }
+        .badge-status-confusing { background: var(--warning-light); color: var(--warning-text); }
+        .badge-status-unmemorized { background: var(--surface-sub); color: var(--text-sub); }
+
+        .icon-btn {
+            background: var(--surface-sub);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            cursor: pointer;
+        }
+
+        .icon-btn.fav-active {
+            background: var(--warning-light);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .fc-center-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: 12px;
+        }
+
+        .fc-main-text {
+            font-size: 3.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 0.02em;
+        }
+
+        .fc-main-text.meaning-mode {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+
+        .fc-hint-box {
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-hint {
+            padding: 7px 16px;
+            border-radius: 999px;
+            border: 1px dashed var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .hint-revealed {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 4px 18px;
+            border-radius: 999px;
+        }
+
+        .fc-back-kanji {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .fc-back-reading {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .fc-back-kr-pron {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            background: var(--surface-sub);
+            padding: 3px 12px;
+            border-radius: 999px;
+        }
+
+        .fc-back-meaning {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 6px;
+        }
+
+        .fc-footer-tip {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+
+        .fc-controls-Area {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .fc-nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 13px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .fc-counter {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-sub);
+            min-width: 90px;
+            text-align: center;
+        }
+
+        .status-btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .status-btn {
+            padding: 14px 12px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .status-btn.memorized { background: var(--success-light); color: var(--success-text); }
+        .status-btn.memorized:hover, .status-btn.memorized.active-status { border-color: var(--success); }
+        .status-btn.confusing { background: var(--warning-light); color: var(--warning-text); }
+        .status-btn.confusing:hover, .status-btn.confusing.active-status { border-color: var(--warning); }
+        .status-btn.unmemorized { background: var(--surface-sub); color: var(--text-sub); border-color: var(--border); }
+        .status-btn.unmemorized:hover, .status-btn.unmemorized.active-status { border-color: var(--secondary); color: var(--text-main); }
+
+        /* 단어장 테이블 */
+        .vocab-search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-input-wrap {
+            flex: 1;
+            position: relative;
+            min-width: 240px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary);
+        }
+
+        .vocab-table-container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        table.vocab-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        table.vocab-table th {
+            background: var(--surface-sub);
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        table.vocab-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            font-size: 0.95rem;
+        }
+
+        table.vocab-table tr:hover { background: var(--primary-light); }
+
+        .td-kanji {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .td-reading {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.05rem;
+        }
+
+        .td-kr-pron { color: var(--text-sub); font-size: 0.85rem; }
+        .td-meaning { font-weight: 600; }
+
+        .mini-status-group { display: inline-flex; gap: 4px; }
+        .mini-status-btn {
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface-sub);
+            color: var(--text-main);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .mini-status-btn.active-memorized { background: var(--success); color: #0f172a; border-color: var(--success); }
+        .mini-status-btn.active-confusing { background: var(--warning); color: #0f172a; border-color: var(--warning); }
+        .mini-status-btn.active-unmemorized { background: var(--secondary); color: #0f172a; border-color: var(--secondary); }
+
+        /* 퀴즈 영역 */
+        .quiz-header-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 8px;
+            background: var(--surface-sub);
+            padding: 5px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .diff-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+
+        .diff-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        body.dark-mode .diff-btn.active {
+            color: #0f172a;
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        .quiz-sentence-box {
+            background: var(--surface-sub);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .quiz-sentence {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .quiz-target-highlight {
+            color: var(--primary);
+            text-decoration: underline;
+            text-underline-offset: 6px;
+            font-weight: 900;
+            font-size: 1.8rem;
+            padding: 0 4px;
+        }
+
+        .quiz-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-options-grid { grid-template-columns: 1fr; }
+        }
+
+        .quiz-opt-btn {
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--card-bg);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quiz-opt-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .quiz-opt-btn.correct {
+            border-color: var(--success);
+            background: var(--success-light);
+            color: var(--success-text);
+        }
+
+        .quiz-opt-btn.wrong {
+            border-color: var(--danger);
+            background: var(--danger-light);
+            color: var(--danger-text);
+        }
+
+        .quiz-feedback-box {
+            display: none;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            background: var(--surface-sub);
+        }
+
+        .quiz-feedback-box.show { display: block; }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .side-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .side-card h3 {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .shortcut-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+
+        kbd {
+            background: var(--kbd-bg);
+            color: var(--text-main);
+            border: 1px solid var(--kbd-border);
+            border-bottom-width: 2px;
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px dashed var(--border);
+            color: var(--text-sub);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <div class="app-title">
+            <h1>🇯🇵 일본어 기출 어휘 통합 학습장</h1>
+            <p>일본 표준 신자체(新字体) 전용 폰트 엔진 탑재 · 기출 38장 전수 통합</p>
+        </div>
+        <div class="header-right">
+            <button id="darkModeToggleBtn" class="theme-toggle-btn" onclick="toggleDarkMode()" title="다크모드 전환 (단축키 D)">
+                🌙 다크 모드
+            </button>
+            <div class="stats-bar" id="headerStats"></div>
+        </div>
+    </div>
+</header>
+
+<div class="main-container">
+    <main>
+        <!-- 공통 필터 바 -->
+        <section class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <span class="filter-label">📅 기출 연도/분류:</span>
+                    <select id="yearFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="ALL">전체 단어 보기</option>
+                        <option value="DUP">🔥 중복 기출 단어만 모아보기</option>
+                        <option value="2025">2025년 기출</option>
+                        <option value="2024">2024년 기출</option>
+                        <option value="2023">2023년 기출</option>
+                        <option value="2022">2022년 기출</option>
+                        <option value="2021">2021년 기출</option>
+                        <option value="2020">2020년 기출</option>
+                        <option value="2019">2019년 기출</option>
+                        <option value="2018">2018년 기출</option>
+                        <option value="2017">2017년 기출</option>
+                        <option value="2016">2016년 기출</option>
+                        <option value="2015">2015년 기출</option>
+                        <option value="2014">2014년 기출</option>
+                        <option value="2013">2013년 기출</option>
+                        <option value="2012">2012년 기출</option>
+                        <option value="2011">2011년 기출</option>
+                        <option value="2010">2010년 기출</option>
+                        <option value="2009~2000">2009~2000년 기출</option>
+                        <option value="기본빈출">기본 빈출 체크 어휘</option>
+                    </select>
+
+                    <span class="filter-label">🧠 암기 상태:</span>
+                    <select id="statusFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="ALL">전체 상태</option>
+                        <option value="unmemorized">미암기 단어</option>
+                        <option value="confusing">헷갈리는 단어</option>
+                        <option value="memorized">외운 단어</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <button id="favFilterBtn" class="btn-fav-filter" onclick="toggleFavFilter()">
+                        <span>★</span> 즐겨찾기 모아보기
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 탭 네비게이션 -->
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('flashcard')" id="tabBtn-flashcard">
+                🗂️ 탭 1: 플래시카드
+            </button>
+            <button class="tab-btn" onclick="switchTab('vocab')" id="tabBtn-vocab">
+                📖 탭 2: 단어장 목록
+            </button>
+            <button class="tab-btn" onclick="switchTab('quiz')" id="tabBtn-quiz">
+                📝 탭 3: 종합 문제 (4지선다)
+            </button>
+        </nav>
+
+        <!-- 탭 1: 플래시카드 -->
+        <section id="tab-flashcard" class="tab-content active">
+            <div class="fc-toolbar">
+                <button class="mode-toggle-btn" id="fcModeBtn" onclick="toggleFcMode()">
+                    🔄 표시 모드: <strong>기본 (한자 ➔ 뜻/읽기)</strong>
+                </button>
+                <div style="display:flex; gap:8px;">
+                    <button class="action-btn" onclick="shuffleFlashcards()">
+                        🔀 카드 순서 섞기 (Shuffle)
+                    </button>
+                    <button class="action-btn" onclick="speakCurrentCard()">
+                        🔊 발음 듣기
+                    </button>
+                </div>
+            </div>
+
+            <div class="fc-progress-bar">
+                <div class="fc-progress-fill" id="fcProgressFill" style="width: 0%;"></div>
+            </div>
+
+            <div id="fcEmptyState" class="empty-state" style="display:none;">
+                <h3>조건에 맞는 단어가 없습니다.</h3>
+                <p style="margin-top:8px;">상단의 연도별/상태별/즐겨찾기 필터를 변경해 보세요.</p>
+            </div>
+
+            <div id="fcMainArea">
+                <div class="fc-scene">
+                    <div class="fc-card" id="fcCard" onclick="flipCard()">
+                        <!-- 앞면 -->
+                        <div class="fc-face fc-face-front">
+                            <div class="fc-top-bar" onclick="event.stopPropagation()">
+                                <div class="badges-wrap" id="fcFrontBadges"></div>
+                                <div class="fc-top-actions">
+                                    <button class="icon-btn" id="fcFavBtn" onclick="toggleCurrentFav()" title="즐겨찾기 토글 (단축키 S)">☆</button>
+                                </div>
+                            </div>
+
+                            <div class="fc-center-content">
+                                <div class="fc-main-text jp-text" id="fcFrontText" lang="ja">争う</div>
+                                <div class="fc-hint-box" id="fcHintContainer" onclick="event.stopPropagation()">
+                                    <button class="btn-hint" id="fcHintBtn" onclick="showReadingHint()">💡 요미가나 힌트 보기 (H)</button>
+                                    <div class="hint-revealed jp-text" id="fcHintText" style="display:none;" lang="ja"></div>
+                                </div>
+                            </div>
+
+                            <div class="fc-footer-tip">카드를 클릭하거나 [Space / Enter] 키를 누르면 뒤집힙니다</div>
+                        </div>
+
+                        <!-- 뒷면 -->
+                        <div class="fc-face fc-face-back">
+                            <div class="fc-top-bar" onclick="event.stopPropagation()">
+                                <div class="badges-wrap" id="fcBackBadges"></div>
+                                <div class="fc-top-actions">
+                                    <button class="icon-btn" onclick="speakCurrentCard()" title="일본어 발음 듣기">🔊</button>
+                                    <button class="icon-btn" id="fcFavBtnBack" onclick="toggleCurrentFav()" title="즐겨찾기 토글 (단축키 S)">☆</button>
+                                </div>
+                            </div>
+
+                            <div class="fc-center-content">
+                                <div class="fc-back-kanji jp-text" id="fcBackKanji" style="display:none;" lang="ja"></div>
+                                <div class="fc-back-reading jp-text" id="fcBackReading" lang="ja">あらそう</div>
+                                <div class="fc-back-kr-pron" id="fcBackKrPron">[아라소우]</div>
+                                <div class="fc-back-meaning" id="fcBackMeaning">싸우다, 경쟁하다</div>
+                            </div>
+
+                            <div class="fc-footer-tip">하단 버튼 또는 숫자키 [1], [2], [3]으로 암기 상태를 기록하세요</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fc-controls-Area">
+                    <div class="fc-nav-row">
+                        <button class="nav-btn" onclick="prevCard()">◀ 이전 카드 (←)</button>
+                        <div class="fc-counter" id="fcCounter">1 / 100</div>
+                        <button class="nav-btn" onclick="nextCard()">다음 카드 (→) ▶</button>
+                    </div>
+
+                    <div class="status-btn-group">
+                        <button class="status-btn memorized" id="btnStatusMemorized" onclick="setCardStatus('memorized')">
+                            ⭕ 외움 (1)
+                        </button>
+                        <button class="status-btn confusing" id="btnStatusConfusing" onclick="setCardStatus('confusing')">
+                            ❓ 헷갈림 (2)
+                        </button>
+                        <button class="status-btn unmemorized" id="btnStatusUnmemorized" onclick="setCardStatus('unmemorized')">
+                            📌 미암기 (3)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 탭 2: 단어장 -->
+        <section id="tab-vocab" class="tab-content">
+            <div class="vocab-search-bar">
+                <div class="search-input-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="vocabSearchInput" class="search-input jp-text" placeholder="한자, 요미가나, 한국어 발음, 한국어 뜻으로 검색..." oninput="renderVocabTable()">
+                </div>
+                <div style="display:flex; align-items:center; font-weight:700; color:var(--text-sub); padding:0 8px;" id="vocabCountLabel">
+                    총 0개 단어
+                </div>
+            </div>
+
+            <div class="vocab-table-container">
+                <table class="vocab-table">
+                    <thead>
+                        <tr>
+                            <th style="width:50px; text-align:center;">★</th>
+                            <th>한자 표기 (신자체)</th>
+                            <th>요미가나 (한국어 발음)</th>
+                            <th>한국어 뜻</th>
+                            <th>기출 연도 / 중복 여부</th>
+                            <th style="text-align:center;">암기 상태 변경</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vocabTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 탭 3: 4지선다 퀴즈 -->
+        <section id="tab-quiz" class="tab-content">
+            <div class="quiz-header-card">
+                <div>
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub); margin-bottom:6px;">난이도 선택 (2단계)</div>
+                    <div class="difficulty-selector">
+                        <button class="diff-btn active" id="diffEasyBtn" onclick="setQuizDifficulty('easy')">
+                            🌱 쉬운 난이도 (Easy)
+                        </button>
+                        <button class="diff-btn" id="diffHardBtn" onclick="setQuizDifficulty('hard')">
+                            🔥 어려운 난이도 (Hard: JLPT 함정 요미가나)
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <div id="quizScoreBadge" style="font-weight:800; color:var(--primary); font-size:0.95rem;">
+                        정답률: 0 / 0 (0%)
+                    </div>
+                    <button class="action-btn" onclick="startNewQuizSession()">
+                        🔄 새 문제 출제
+                    </button>
+                </div>
+            </div>
+
+            <div id="quizMainArea" class="quiz-card"></div>
+        </section>
+    </main>
+
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+        <div class="side-card">
+            <h3>⌨️ 키보드 단축키 가이드</h3>
+            <ul class="shortcut-list">
+                <li class="shortcut-item"><span>카드 뒤집기</span><span><kbd>Space</kbd> / <kbd>Enter</kbd></span></li>
+                <li class="shortcut-item"><span>이전 / 다음</span><span><kbd>←</kbd> / <kbd>→</kbd></span></li>
+                <li class="shortcut-item"><span>요미가나 힌트</span><span><kbd>H</kbd></span></li>
+                <li class="shortcut-item"><span>[외움] 등록</span><span><kbd>1</kbd></span></li>
+                <li class="shortcut-item"><span>[헷갈림] 등록</span><span><kbd>2</kbd></span></li>
+                <li class="shortcut-item"><span>[미암기] 등록</span><span><kbd>3</kbd></span></li>
+                <li class="shortcut-item"><span>즐겨찾기 토글</span><span><kbd>S</kbd></span></li>
+                <li class="shortcut-item"><span>다크모드 전환</span><span><kbd>D</kbd></span></li>
+            </ul>
+        </div>
+
+        <div class="side-card">
+            <h3>📊 내 학습 데이터 관리</h3>
+            <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom:14px;">
+                체크한 즐겨찾기(★), 암기 상태, 다크모드 설정은 브라우저에 안전하게 보관됩니다.
+            </p>
+            <button class="action-btn" style="width:100%; justify-content:center; color:var(--danger); border-color:var(--danger);" onclick="resetAllUserData()">
+                🗑️ 학습 기록 초기화
+            </button>
+        </div>
+    </aside>
+</div>
+
+<script>
+/**
+ * 다크모드 상태 관리 및 localStorage 연동
+ */
+const THEME_STORAGE_KEY = 'JLPT_DARK_MODE_PREF_V1';
+
+function initDarkMode() {
+    try {
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+        applyDarkModeUI(isDark);
+    } catch (e) {
+        console.warn(e);
+    }
+}
+
+function toggleDarkMode() {
+    const isCurrentlyDark = document.body.classList.contains('dark-mode');
+    const nextDark = !isCurrentlyDark;
+    applyDarkModeUI(nextDark);
+    try {
+        localStorage.setItem(THEME_STORAGE_KEY, nextDark ? 'dark' : 'light');
+    } catch (e) {
+        console.warn(e);
+    }
+}
+
+function applyDarkModeUI(isDark) {
+    document.body.classList.toggle('dark-mode', isDark);
+    const btn = document.getElementById('darkModeToggleBtn');
+    if (btn) {
+        btn.innerHTML = isDark ? '☀️ 라이트 모드' : '🌙 다크 모드';
+    }
+}
+
+/**
+ * 일본 표준 신자체(新字体) 전수 적용 어휘 데이터베이스
+ */
+const RAW_VOCAB_SOURCES = [
+    // [2025년 기출]
+    { k: "争う", r: "あらそう", m: "싸우다, 경쟁하다", y: "2025" },
+    { k: "収まる", r: "おさまる", m: "가라앉다, 해결되다", y: "2025" },
+    { k: "辛い", r: "からい", m: "맵다", y: "2025" },
+    { k: "起床", r: "きしょう", m: "기상", y: "2025" },
+    { k: "刑事", r: "けいじ", m: "형사", y: "2025" },
+    { k: "才能", r: "さいのう", m: "재능", y: "2025" },
+    { k: "統一", r: "とういつ", m: "통일", y: "2025" },
+    { k: "討論", r: "とうろん", m: "토론", y: "2025" },
+    { k: "柱", r: "はしら", m: "기둥", y: "2025" },
+    { k: "豊富", r: "ほうふ", m: "풍부함", y: "2025" },
+    { k: "拡充", r: "かくじゅう", m: "확충", y: "2025" },
+    { k: "視察", r: "しさつ", m: "시찰", y: "2025" },
+    { k: "救う", r: "すくう", m: "구하다, 구조하다", y: "2025" },
+    { k: "略す", r: "りゃくす", m: "생략하다", y: "2025" },
+    { k: "傾向", r: "けいこう", m: "경향", y: "2025" },
+    { k: "施設", r: "しせつ", m: "시설", y: "2025" },
+    { k: "涼む", r: "すずむ", m: "시원한 바람을 쐬다", y: "2025" },
+    { k: "削る", r: "けずる", m: "깎다, 줄이다, 없애다", y: "2025" },
+    { k: "湿る", r: "しめる", m: "축축해지다, 습기 차다", y: "2025" },
+    { k: "濃厚", r: "のうこう", m: "농후함, 짙음", y: "2025" },
+
+    // [2024년 기출]
+    { k: "鮮やか", r: "あざやか", m: "선명함, 또렷함", y: "2024" },
+    { k: "衣装", r: "いしょう", m: "의상", y: "2024" },
+    { k: "絡まる", r: "からまる", m: "휘감기다, 얽히다", y: "2024" },
+    { k: "実践", r: "じっせん", m: "실천", y: "2024" },
+    { k: "詳細", r: "しょうさい", m: "상세함, 자세함", y: "2024" },
+    { k: "背骨", r: "せぼね", m: "척추", y: "2024" },
+    { k: "農薬", r: "のうやく", m: "농약", y: "2024" },
+    { k: "分析", r: "ぶんせき", m: "분석", y: "2024" },
+    { k: "迷う", r: "まよう", m: "망설이다, 헤매다", y: "2024" },
+    { k: "優秀", r: "ゆうしゅう", m: "우수함", y: "2024" },
+
+    // [2023년 기출]
+    { k: "握手", r: "あくしゅ", m: "악수", y: "2023" },
+    { k: "腕", r: "うで", m: "팔, 솜씨", y: "2023" },
+    { k: "運賃", r: "うんちん", m: "운임", y: "2023" },
+    { k: "幼い", r: "おさない", m: "어리다, 유치하다", y: "2023" },
+    { k: "険しい", r: "けわしい", m: "험악하다, 가파르다", y: "2023" },
+    { k: "削除", r: "さくじょ", m: "삭제", y: "2023" },
+    { k: "善良", r: "ぜんりょう", m: "선량함", y: "2023" },
+    { k: "平等", r: "びょうどう", m: "평등", y: "2023" },
+    { k: "乱れる", r: "みだれる", m: "흐트러지다", y: "2023" },
+    { k: "模範", r: "もはん", m: "모범", y: "2023" },
+
+    // [2022년 기출]
+    { k: "勇ましい", r: "いさましい", m: "용감하다, 활기차다", y: "2022" },
+    { k: "偉い", r: "えらい", m: "대단하다, 훌륭하다", y: "2022" },
+    { k: "記憶", r: "きおく", m: "기억", y: "2022" },
+    { k: "警備", r: "けいび", m: "경비", y: "2022" },
+    { k: "刺激", r: "しげき", m: "자극", y: "2022" },
+    { k: "世間", r: "せけん", m: "세간, 세상", y: "2022" },
+    { k: "素材", r: "そざい", m: "소재", y: "2022" },
+    { k: "務める", r: "つとめる", m: "(역할을) 맡다", y: "2022" },
+    { k: "途端に", r: "とたんに", m: "바로 그 순간에", y: "2022" },
+    { k: "外れる", r: "はずれる", m: "제외되다, 벗어나다", y: "2022" },
+    { k: "余暇", r: "よか", m: "여가", y: "2022" },
+    { k: "備える", r: "そなえる", m: "갖추다, 대비하다", y: "2022" },
+    { k: "俳優", r: "はいゆう", m: "배우", y: "2022" },
+    { k: "欲", r: "よく", m: "욕심", y: "2022" },
+    { k: "診断", r: "しんだん", m: "진단", y: "2022" },
+    { k: "典型的", r: "てんけいてき", m: "전형적", y: "2022" },
+    { k: "離れる", r: "はなれる", m: "떨어지다, 멀어지다", y: "2022" },
+    { k: "垂直", r: "すいちょく", m: "수직", y: "2022" },
+    { k: "昇る", r: "のぼる", m: "떠오르다, 오르다", y: "2022" },
+    { k: "等しい", r: "ひとしい", m: "같다, 동등하다", y: "2022" },
+
+    // [2021년 기출]
+    { k: "焦る", r: "あせる", m: "초조해하다", y: "2021" },
+    { k: "著しい", r: "いちじるしい", m: "현저하다, 두드러지다", y: "2021" },
+    { k: "介護", r: "かいご", m: "간호, 간병", y: "2021" },
+    { k: "傾く", r: "かたむく", m: "기울다, 치우치다", y: "2021" },
+    { k: "賛否", r: "さんぴ", m: "찬반, 가부", y: "2021" },
+    { k: "情景", r: "じょうけい", m: "정경, 광경", y: "2021" },
+    { k: "声援", r: "せいえん", m: "성원", y: "2021" },
+    { k: "乏しい", r: "とぼしい", m: "모자라다, 부족하다", y: "2021" },
+    { k: "破片", r: "はへん", m: "파편, 부서진 조각", y: "2021" },
+    { k: "永久", r: "えいきゅう", m: "영구, 영원", y: "2021" },
+    { k: "弱点", r: "じゃくてん", m: "약점", y: "2021" },
+    { k: "返品", r: "へんぴん", m: "반품", y: "2021" },
+    { k: "乱暴", r: "らんぼう", m: "난폭함", y: "2021" },
+    { k: "勧誘", r: "かんゆう", m: "권유", y: "2021" },
+    { k: "順調", r: "じゅんちょう", m: "순조로움", y: "2021" },
+    { k: "任せる", r: "まかせる", m: "맡기다", y: "2021" },
+    { k: "競う", r: "きそう", m: "겨루다, 경쟁하다", y: "2021" },
+    { k: "積もる", r: "つもる", m: "쌓이다", y: "2021" },
+    { k: "豊か", r: "ゆたか", m: "풍요로움, 풍부함", y: "2021" },
+
+    // [2020~2010년 주요 기출]
+    { k: "下降", r: "かこう", m: "하강, 추락", y: "2020" },
+    { k: "倒す", r: "たおす", m: "쓰러뜨리다, 무너뜨리다", y: "2020" },
+    { k: "比較的", r: "ひかくてき", m: "비교적", y: "2020" },
+    { k: "損害", r: "そんがい", m: "손해", y: "2020" },
+    { k: "異色", r: "いしょく", m: "이색적임", y: "2020" },
+    { k: "縮める", r: "ちぢめる", m: "줄이다, 움츠리다", y: "2020" },
+    { k: "帰省", r: "きせい", m: "귀성", y: "2020" },
+    { k: "圧倒的", r: "あっとうてき", m: "압도적", y: "2019" },
+    { k: "軽傷", r: "けいしょう", m: "경상, 조금 다침", y: "2019" },
+    { k: "憎む", r: "にくむ", m: "미워하다, 증오하다", y: "2019" },
+    { k: "負担", r: "ふたん", m: "부담", y: "2019" },
+    { k: "映る", r: "うつる", m: "비치다", y: "2019" },
+    { k: "下旬", r: "げじゅん", m: "하순", y: "2019" },
+    { k: "恥", r: "はじ", m: "부끄러움, 수치, 창피", y: "2019" },
+    { k: "偶然", r: "ぐうぜん", m: "우연(히)", y: "2019" },
+    { k: "拡張", r: "かくちょう", m: "확장", y: "2019" },
+    { k: "損", r: "そん", m: "손해", y: "2019" },
+    { k: "陽気", r: "ようき", m: "명랑함", y: "2019" },
+    { k: "違反", r: "いはん", m: "위반", y: "2019" },
+    { k: "濃い", r: "こい", m: "짙다, 진하다", y: "2019" },
+    { k: "混じる", r: "まじる", m: "섞이다", y: "2019" },
+    { k: "演技", r: "えんぎ", m: "연기", y: "2019" },
+    { k: "趣味", r: "しゅみ", m: "취미", y: "2019" },
+    { k: "見逃す", r: "みのがす", m: "못 보다, 놓치다", y: "2019" },
+    { k: "企画", r: "きかく", m: "기획", y: "2018" },
+    { k: "抽選", r: "ちゅうせん", m: "추첨", y: "2018" },
+    { k: "冷蔵庫", r: "れいぞうこ", m: "냉장고", y: "2018" },
+    { k: "怖い", r: "こわい", m: "무섭다", y: "2018" },
+    { k: "処理", r: "しょり", m: "처리", y: "2018" },
+    { k: "和やか", r: "なごやか", m: "온화함", y: "2018" },
+    { k: "再度", r: "さいど", m: "재차, 다시", y: "2018" },
+    { k: "総額", r: "そうがく", m: "총액", y: "2018" },
+    { k: "精算", r: "せいさん", m: "정산", y: "2018" },
+    { k: "系統", r: "けいとう", m: "계통", y: "2018" },
+    { k: "束ねる", r: "たばねる", m: "묶다, 통솔하다", y: "2018" },
+    { k: "迎える", r: "むかえる", m: "맞이하다, 마중하다", y: "2018" },
+    { k: "省く", r: "はぶく", m: "줄이다, 생략하다", y: "2018" },
+    { k: "養う", r: "やしなう", m: "기르다, 부양하다", y: "2018" },
+    { k: "絞る", r: "しぼる", m: "조이다, 쥐어짜다", y: "2017" },
+    { k: "強火", r: "つよび", m: "센불", y: "2017" },
+    { k: "密閉", r: "みっぺい", m: "밀폐", y: "2017" },
+    { k: "抱える", r: "かかえる", m: "안다, 문제를 떠안다", y: "2017" },
+    { k: "柔軟", r: "じゅうなん", m: "유연함", y: "2017" },
+    { k: "握る", r: "にぎる", m: "쥐다, 잡다", y: "2017" },
+    { k: "求人", r: "きゅうじん", m: "구인", y: "2017" },
+    { k: "荒い", r: "あらい", m: "거칠다, 거세다", y: "2017" },
+    { k: "凍る", r: "こおる", m: "얼다", y: "2017" },
+    { k: "領収書", r: "りょうしゅうしょ", m: "영수증", y: "2017" },
+    { k: "在籍", r: "ざいせき", m: "재적", y: "2017" },
+    { k: "好調", r: "こうちょう", m: "호조, 순조", y: "2017" },
+    { k: "従う", r: "したがう", m: "따르다, 복종하다", y: "2017" },
+    { k: "福祉", r: "ふくし", m: "복지", y: "2017" },
+    { k: "怪しい", r: "あやしい", m: "수상하다, 의심스럽다", y: "2016" },
+    { k: "願望", r: "がんぼう", m: "바람, 소원", y: "2016" },
+    { k: "治療", r: "ちりょう", m: "치료", y: "2016" },
+    { k: "容姿", r: "ようし", m: "용모와 자태", y: "2016" },
+    { k: "納める", r: "おさめる", m: "넣다, 납입하다", y: "2016" },
+    { k: "伴う", r: "ともなう", m: "동반하다, 따르다", y: "2016" },
+    { k: "劣る", r: "おとる", m: "뒤떨어지다", y: "2016" },
+    { k: "貴重", r: "きちょう", m: "귀중함", y: "2016" },
+    { k: "批評", r: "ひひょう", m: "비평", y: "2016" },
+    { k: "簡潔", r: "かんけつ", m: "간결함", y: "2016" },
+    { k: "快い", r: "こころよい", m: "유쾌하다, 기분 좋다", y: "2016" },
+    { k: "製造", r: "せいぞう", m: "제조", y: "2016" },
+    { k: "催し", r: "もよおし", m: "모임, 행사", y: "2016" },
+    { k: "硬貨", r: "こうか", m: "금속 화폐, 동전", y: "2016" },
+    { k: "参照", r: "さんしょう", m: "참조", y: "2016" },
+    { k: "保証", r: "ほしょう", m: "보증", y: "2016" },
+    { k: "焦げる", r: "こげる", m: "타다, 눌다", y: "2016" },
+    { k: "症状", r: "しょうじょう", m: "증상, 증세", y: "2016" },
+    { k: "招く", r: "まねく", m: "초대하다, 초래하다", y: "2016" },
+    { k: "囲む", r: "かこむ", m: "둘러싸다", y: "2015" },
+    { k: "現象", r: "げんしょう", m: "현상", y: "2015" },
+    { k: "油断", r: "ゆだん", m: "방심, 부주의", y: "2015" },
+    { k: "行事", r: "ぎょうじ", m: "행사", y: "2015" },
+    { k: "省略", r: "しょうりゃく", m: "생략", y: "2015" },
+    { k: "憎い", r: "にくい", m: "밉다, 얄밉다", y: "2015" },
+    { k: "拒否", r: "きょひ", m: "거부", y: "2015" },
+    { k: "含める", r: "ふくめる", m: "포함하다", y: "2015" },
+    { k: "驚く", r: "おどろく", m: "놀라다", y: "2015" },
+    { k: "混乱", r: "こんらん", m: "혼란", y: "2015" },
+    { k: "恵まれる", r: "めぐまれる", m: "혜택을 받다, 풍족하다", y: "2015" },
+    { k: "距離", r: "きょり", m: "거리, 간격", y: "2015" },
+    { k: "指摘", r: "してき", m: "지적", y: "2015" },
+    { k: "講師", r: "こうし", m: "강사", y: "2015" },
+    { k: "圧勝", r: "あっしょう", m: "압승", y: "2014" },
+    { k: "極端", r: "きょくたん", m: "극단적임, 아주 지나침", y: "2014" },
+    { k: "除く", r: "のぞく", m: "제거하다, 제외하다", y: "2014" },
+    { k: "幼稚", r: "ようち", m: "유치함", y: "2014" },
+    { k: "傷む", r: "いたむ", m: "상하다, 손상되다", y: "2014" },
+    { k: "悔しい", r: "くやしい", m: "분하다, 억울하다", y: "2014" },
+    { k: "貿易", r: "ぼうえき", m: "무역", y: "2014" },
+    { k: "大幅", r: "おおはば", m: "큰 폭", y: "2014" },
+    { k: "継続", r: "けいぞく", m: "계속", y: "2014" },
+    { k: "戻す", r: "もどす", m: "되돌리다", y: "2014" },
+    { k: "援助", r: "えんじょ", m: "원조, 도움", y: "2014" },
+    { k: "逆らう", r: "さからう", m: "거스르다, 거역하다", y: "2014" },
+    { k: "批判", r: "ひはん", m: "비판", y: "2014" },
+    { k: "破れる", r: "やぶれる", m: "찢어지다, 패배하다", y: "2014" },
+    { k: "湿っぽい", r: "しめっぽい", m: "축축하다, 습기 차다", y: "2014" },
+    { k: "拾う", r: "ひろう", m: "줍다", y: "2014" },
+    { k: "詳しい", r: "くわしい", m: "자세하다, 상세하다", y: "2014" },
+    { k: "接続", r: "せつぞく", m: "접속", y: "2014" },
+    { k: "面倒", r: "めんどう", m: "귀찮음, 번거로움", y: "2014" },
+    { k: "改めて", r: "あらためて", m: "다시, 새삼스레", y: "2013" },
+    { k: "積む", r: "つむ", m: "쌓다, 싣다", y: "2013" },
+    { k: "世の中", r: "よのなか", m: "세상", y: "2013" },
+    { k: "姿勢", r: "しせい", m: "자세", y: "2013" },
+    { k: "逃亡", r: "とうぼう", m: "도망", y: "2013" },
+    { k: "隠す", r: "かくす", m: "감추다, 숨기다", y: "2013" },
+    { k: "清潔", r: "せいけつ", m: "청결함", y: "2013" },
+    { k: "講義", r: "こうぎ", m: "강의", y: "2013" },
+    { k: "責める", r: "せめる", m: "탓하다, 책망하다", y: "2013" },
+    { k: "果たす", r: "はたす", m: "완수하다", y: "2013" },
+    { k: "寄付", r: "きふ", m: "기부", y: "2013" },
+    { k: "招待", r: "しょうたい", m: "초대", y: "2013" },
+    { k: "即座に", r: "そくざに", m: "즉각, 당장", y: "2013" },
+    { k: "真剣", r: "しんけん", m: "진지함", y: "2013" },
+    { k: "努める", r: "つとめる", m: "노력하다, 힘쓰다", y: "2013" },
+    { k: "焦点", r: "しょうてん", m: "초점", y: "2012" },
+    { k: "略する", r: "りゃくする", m: "생략하다", y: "2012" },
+    { k: "撮影", r: "さつえい", m: "촬영", y: "2012" },
+    { k: "装置", r: "そうち", m: "장치", y: "2012" },
+    { k: "針", r: "はり", m: "바늘", y: "2012" },
+    { k: "占める", r: "しめる", m: "차지하다", y: "2012" },
+    { k: "抽象的", r: "ちゅうしょうてき", m: "추상적", y: "2012" },
+    { k: "返却", r: "へんきゃく", m: "반환, 반납", y: "2012" },
+    { k: "扱う", r: "あつかう", m: "다루다, 취급하다", y: "2012" },
+    { k: "訪れる", r: "おとずれる", m: "방문하다", y: "2012" },
+    { k: "積極的", r: "せっきょくてき", m: "적극적", y: "2012" },
+    { k: "導く", r: "みちびく", m: "인도하다, 이끌다", y: "2012" },
+    { k: "勢い", r: "いきおい", m: "기세, 힘", y: "2012" },
+    { k: "肩", r: "かた", m: "어깨", y: "2012" },
+    { k: "組織", r: "そしき", m: "조직", y: "2012" },
+    { k: "至る", r: "いたる", m: "이르다, 도달하다", y: "2012" },
+    { k: "収穫", r: "しゅうかく", m: "수확", y: "2012" },
+    { k: "抵抗", r: "ていこう", m: "저항", y: "2012" },
+    { k: "祝う", r: "いわう", m: "축하하다", y: "2011" },
+    { k: "地元", r: "じもと", m: "그 지역, 연고지", y: "2011" },
+    { k: "要求", r: "ようきゅう", m: "요구", y: "2011" },
+    { k: "補う", r: "おぎなう", m: "보충하다", y: "2011" },
+    { k: "率直", r: "そっちょく", m: "솔직함", y: "2011" },
+    { k: "密接", r: "みっせつ", m: "밀접함", y: "2011" },
+    { k: "至急", r: "しきゅう", m: "시급, 급히", y: "2011" },
+    { k: "調節", r: "ちょうせつ", m: "조절", y: "2011" },
+    { k: "敗れる", r: "やぶれる", m: "지다, 패배하다", y: "2011" },
+    { k: "相互", r: "そうご", m: "상호, 서로", y: "2010" },
+    { k: "防災", r: "ぼうさい", m: "방재, 재해 방지", y: "2010" },
+    { k: "規模", r: "きぼ", m: "규모", y: "2010" },
+    { k: "隣", r: "となり", m: "옆, 이웃", y: "2010" },
+    { k: "景色", r: "けしき", m: "경치", y: "2010" },
+    { k: "尊重", r: "そんちょう", m: "존중", y: "2010" },
+    { k: "触れる", r: "ふれる", m: "접하다, 닿다", y: "2010" },
+
+    // [2009~2000년 기출]
+    { k: "与える", r: "あたえる", m: "주다, 부여하다", y: "2009~2000" },
+    { k: "異常", r: "いじょう", m: "이상함", y: "2009~2000" },
+    { k: "植木", r: "うえき", m: "정원수, 화초", y: "2009~2000" },
+    { k: "宇宙", r: "うちゅう", m: "우주", y: "2009~2000" },
+    { k: "得る", r: "える", m: "얻다, 획득하다", y: "2009~2000" },
+    { k: "応対", r: "おうたい", m: "응대, 접대", y: "2009~2000" },
+    { k: "置く", r: "おく", m: "놓다, 두다", y: "2009~2000" },
+    { k: "踊り", r: "おどり", m: "춤", y: "2009~2000" },
+    { k: "温かい", r: "あたたかい", m: "따뜻하다", y: "2009~2000" },
+    { k: "案外", r: "あんがい", m: "뜻밖에, 의외로", y: "2009~2000" },
+    { k: "移転", r: "いてん", m: "이전", y: "2009~2000" },
+    { k: "医療", r: "いりょう", m: "의료", y: "2009~2000" },
+    { k: "浮く", r: "うく", m: "떠오르다", y: "2009~2000" },
+    { k: "運送", r: "うんそう", m: "운송", y: "2009~2000" },
+    { k: "延期", r: "えんき", m: "연기, 미룸", y: "2009~2000" },
+    { k: "欧米", r: "おうべい", m: "구미, 유럽과 미국", y: "2009~2000" },
+    { k: "怒る", r: "おこる", m: "화내다", y: "2009~2000" },
+    { k: "主", r: "おも", m: "주됨, 중요함", y: "2009~2000" },
+    { k: "誤り", r: "あやまり", m: "잘못, 오류", y: "2009~2000" },
+    { k: "言い難い", r: "いいがたい", m: "말하기 어렵다", y: "2009~2000" },
+    { k: "祈る", r: "いのる", m: "기도하다", y: "2009~2000" },
+    { k: "印刷", r: "いんさつ", m: "인쇄", y: "2009~2000" },
+    { k: "疑い", r: "うたがい", m: "의심", y: "2009~2000" },
+    { k: "応援", r: "おうえん", m: "응원", y: "2009~2000" },
+    { k: "億", r: "おく", m: "억 (단위)", y: "2009~2000" },
+    { k: "改善", r: "かいぜん", m: "개선", y: "2009~2000" },
+    { k: "回復", r: "かいふく", m: "회복", y: "2009~2000" },
+    { k: "貨物", r: "かもつ", m: "화물", y: "2009~2000" },
+    { k: "缶詰", r: "かんづめ", m: "통조림", y: "2009~2000" },
+    { k: "機嫌", r: "きげん", m: "기분, 심기", y: "2009~2000" },
+    { k: "共感", r: "きょうかん", m: "공감", y: "2009~2000" },
+    { k: "会談", r: "かいだん", m: "회담", y: "2009~2000" },
+    { k: "重ねる", r: "かさねる", m: "거듭하다, 겹치다", y: "2009~2000" },
+    { k: "仮定", r: "かてい", m: "가정, 가설", y: "2009~2000" },
+    { k: "観察", r: "かんさつ", m: "관찰", y: "2009~2000" },
+    { k: "完了", r: "かんりょう", m: "완료", y: "2009~2000" },
+    { k: "記事", r: "きじ", m: "기사", y: "2009~2000" },
+    { k: "客", r: "きゃく", m: "손님, 고객", y: "2009~2000" },
+    { k: "協力", r: "きょうりょく", m: "협력", y: "2009~2000" },
+    { k: "快適", r: "かいてき", m: "쾌적함", y: "2009~2000" },
+    { k: "賢い", r: "かしこい", m: "현명하다, 영리하다", y: "2009~2000" },
+    { k: "可能性", r: "かのうせい", m: "가능성", y: "2009~2000" },
+    { k: "乾燥", r: "かんそう", m: "건조", y: "2009~2000" },
+    { k: "危険", r: "きけん", m: "위험", y: "2009~2000" },
+    { k: "規制", r: "きせい", m: "규제", y: "2009~2000" },
+    { k: "休息", r: "きゅうそく", m: "휴식", y: "2009~2000" },
+    { k: "漁業", r: "ぎょぎょう", m: "어업", y: "2009~2000" },
+    { k: "戦争", r: "せんそう", m: "전쟁", y: "2009~2000" },
+    { k: "操作", r: "そうさ", m: "조작", y: "2009~2000" },
+    { k: "損得", r: "そんとく", m: "손득, 손해와 이득", y: "2009~2000" },
+    { k: "選択", r: "せんたく", m: "선택", y: "2009~2000" },
+    { k: "想像", r: "そうぞう", m: "상상", y: "2009~2000" },
+    { k: "全般", r: "ぜんぱん", m: "전반, 전체", y: "2009~2000" },
+    { k: "退院", r: "たいいん", m: "퇴원", y: "2009~2000" },
+    { k: "他人", r: "たにん", m: "타인, 남", y: "2009~2000" },
+    { k: "知恵", r: "ちえ", m: "지혜", y: "2009~2000" },
+    { k: "知識", r: "ちしき", m: "지식", y: "2009~2000" },
+    { k: "調査", r: "ちょうさ", m: "조사", y: "2009~2000" },
+    { k: "通行", r: "つうこう", m: "통행", y: "2009~2000" },
+    { k: "伝える", r: "つたえる", m: "전하다, 전달하다", y: "2009~2000" },
+    { k: "展開", r: "てんかい", m: "전개", y: "2009~2000" },
+    { k: "突然", r: "とつぜん", m: "돌연, 갑자기", y: "2009~2000" },
+    { k: "泥", r: "どろ", m: "진흙", y: "2009~2000" },
+    { k: "大臣", r: "だいじん", m: "대신, 장관", y: "2009~2000" },
+    { k: "単純", r: "たんじゅん", m: "단순함", y: "2009~2000" },
+    { k: "地球", r: "ちきゅう", m: "지구", y: "2009~2000" },
+    { k: "駐車", r: "ちゅうしゃ", m: "주차", y: "2009~2000" },
+    { k: "著者", r: "ちょしゃ", m: "저자", y: "2009~2000" },
+    { k: "次々と", r: "つぎつぎと", m: "잇달아, 차례차례", y: "2009~2000" },
+    { k: "適切", r: "てきせつ", m: "적절함", y: "2009~2000" },
+    { k: "登山", r: "とざん", m: "등산", y: "2009~2000" },
+    { k: "届く", r: "とどく", m: "도착하다, 닿다", y: "2009~2000" },
+    { k: "代表", r: "だいひょう", m: "대표", y: "2009~2000" },
+    { k: "担当者", r: "たんとうしゃ", m: "담당자", y: "2009~2000" },
+    { k: "遅刻", r: "ちこく", m: "지각", y: "2009~2000" },
+    { k: "兆", r: "ちょう", m: "조 (단위)", y: "2009~2000" },
+    { k: "貯蔵", r: "ちょぞう", m: "저장", y: "2009~2000" },
+    { k: "鉄橋", r: "てっきょう", m: "철교", y: "2009~2000" },
+    { k: "途中", r: "とちゅう", m: "도중", y: "2009~2000" },
+    { k: "努力", r: "どりょく", m: "노력", y: "2009~2000" },
+    { k: "内容", r: "ないよう", m: "내용", y: "2009~2000" },
+    { k: "日課", r: "にっか", m: "일과", y: "2009~2000" },
+    { k: "熱演", r: "ねつえん", m: "열연", y: "2009~2000" },
+    { k: "述べる", r: "のべる", m: "서술하다", y: "2009~2000" },
+    { k: "仲良く", r: "なかよく", m: "사이좋게", y: "2009~2000" },
+    { k: "盗む", r: "ぬすむ", m: "훔치다", y: "2009~2000" },
+    { k: "年齢", r: "ねんれい", m: "연령, 나이", y: "2009~2000" },
+    { k: "悩む", r: "なやむ", m: "고민하다", y: "2009~2000" },
+    { k: "塗る", r: "ぬる", m: "바르다, 칠하다", y: "2009~2000" },
+    { k: "残る", r: "のこる", m: "남다", y: "2009~2000" },
+    { k: "倍", r: "ばい", m: "배 (배수)", y: "2009~2000" },
+    { k: "発射", r: "はっしゃ", m: "발사", y: "2009~2000" },
+    { k: "反対", r: "はんたい", m: "반대", y: "2009~2000" },
+    { k: "秒", r: "びょう", m: "초 (시간)", y: "2009~2000" },
+    { k: "舞台", r: "ぶたい", m: "무대", y: "2009~2000" },
+    { k: "減る", r: "へる", m: "줄다, 감소하다", y: "2009~2000" },
+    { k: "法律", r: "ほうりつ", m: "법률", y: "2009~2000" },
+    { k: "配布", r: "はいふ", m: "배포", y: "2009~2000" },
+    { k: "張り切る", r: "はりきる", m: "기운이 넘치다", y: "2009~2000" },
+    { k: "判断", r: "はんだん", m: "판단", y: "2009~2000" },
+    { k: "悲劇", r: "ひげき", m: "비극", y: "2009~2000" },
+    { k: "評価", r: "ひょうか", m: "평가", y: "2009~2000" },
+    { k: "部分的", r: "ぶぶんてき", m: "부분적", y: "2009~2000" },
+    { k: "星", r: "ほし", m: "별", y: "2009~2000" },
+    { k: "爆発", r: "ばくはつ", m: "폭발", y: "2009~2000" },
+    { k: "犯罪", r: "はんざい", m: "범죄", y: "2009~2000" },
+    { k: "販売", r: "はんばい", m: "판매", y: "2009~2000" },
+    { k: "皮膚", r: "ひふ", m: "피부", y: "2009~2000" },
+    { k: "標識", r: "ひょうしき", m: "표지, 표식", y: "2009~2000" },
+    { k: "平均", r: "へいきん", m: "평균", y: "2009~2000" },
+    { k: "方針", r: "ほうしん", m: "방침", y: "2009~2000" },
+    { k: "掘る", r: "ほる", m: "파다, 캐다", y: "2009~2000" },
+    { k: "求める", r: "もとめる", m: "구하다, 요구하다", y: "2009~2000" },
+    { k: "認める", r: "みとめる", m: "인정하다", y: "2009~2000" },
+    { k: "物語", r: "ものがたり", m: "이야기", y: "2009~2000" },
+    { k: "未来", r: "みらい", m: "미래", y: "2009~2000" },
+    { k: "目的", r: "もくてき", m: "목적", y: "2009~2000" },
+    { k: "役目", r: "やくめ", m: "임무, 역할", y: "2009~2000" },
+    { k: "雇う", r: "やとう", m: "고용하다", y: "2009~2000" },
+    { k: "良い", r: "よい", m: "좋다", y: "2009~2000" },
+    { k: "焼ける", r: "やける", m: "불타다, 구워지다", y: "2009~2000" },
+    { k: "優勝", r: "ゆうしょう", m: "우승", y: "2009~2000" },
+    { k: "溶岩", r: "ようがん", m: "용암", y: "2009~2000" },
+    { k: "家賃", r: "やちん", m: "집세, 월세", y: "2009~2000" },
+    { k: "流行", r: "りゅうこう", m: "유행", y: "2009~2000" },
+    { k: "例外", r: "れいがい", m: "예외", y: "2009~2000" },
+    { k: "連続", r: "れんぞく", m: "연속", y: "2009~2000" },
+    { k: "割合", r: "わりあい", m: "비율", y: "2009~2000" },
+    { k: "両替", r: "りょうがえ", m: "환전", y: "2009~2000" },
+    { k: "冷凍", r: "れいとう", m: "냉동", y: "2009~2000" },
+    { k: "連絡", r: "れんらく", m: "연락", y: "2009~2000" },
+    { k: "両国", r: "りょうこく", m: "양국", y: "2009~2000" },
+    { k: "歴史", r: "れきし", m: "역사", y: "2009~2000" },
+    { k: "笑う", r: "わらう", m: "웃다", y: "2009~2000" },
+    { k: "寿命", r: "じゅみょう", m: "수명", y: "2009~2000" },
+
+    // [기본 빈출 체크 어휘]
+    { k: "開ける", r: "あける", m: "열다", y: "기본빈출" },
+    { k: "暑い", r: "あつい", m: "덥다", y: "기본빈출" },
+    { k: "暑さ", r: "あつさ", m: "더위", y: "기본빈출" },
+    { k: "集まる", r: "あつまる", m: "모이다", y: "기본빈출" },
+    { k: "集める", r: "あつめる", m: "모으다", y: "기본빈출" },
+    { k: "洗う", r: "あらう", m: "씻다", y: "기본빈출" },
+    { k: "歩く", r: "あるく", m: "걷다", y: "기본빈출" },
+    { k: "以外", r: "いがい", m: "이외", y: "기본빈출" },
+    { k: "池", r: "いけ", m: "연못", y: "기본빈출" },
+    { k: "意見", r: "いけん", m: "의견", y: "기본빈출" },
+    { k: "医者", r: "いしゃ", m: "의사", y: "기본빈출" },
+    { k: "急ぐ", r: "いそぐ", m: "서두르다", y: "기본빈출" },
+    { k: "一度", r: "いちど", m: "한 번", y: "기본빈출" },
+    { k: "糸", r: "いと", m: "실", y: "기본빈출" },
+    { k: "妹", r: "いもうと", m: "여동생", y: "기본빈출" },
+    { k: "動く", r: "うごく", m: "움직이다", y: "기본빈출" },
+    { k: "写す", r: "うつす", m: "베끼다, 찍다", y: "기본빈출" },
+    { k: "売る", r: "うる", m: "팔다", y: "기본빈출" },
+    { k: "売れる", r: "うれる", m: "팔리다", y: "기본빈출" },
+    { k: "運転", r: "うんてん", m: "운전", y: "기본빈출" },
+    { k: "運動", r: "うんどう", m: "운동", y: "기본빈출" },
+    { k: "営業", r: "えいぎょう", m: "영업", y: "기본빈출" },
+    { k: "送る", r: "おくる", m: "보내다", y: "기본빈출" },
+    { k: "行う", r: "おこなう", m: "행하다", y: "기본빈출" },
+    { k: "教える", r: "おしえる", m: "가르치다", y: "기본빈출" },
+    { k: "お正月", r: "おしょうがつ", m: "양력설", y: "기본빈출" },
+    { k: "押す", r: "おす", m: "누르다, 밀다", y: "기본빈출" },
+    { k: "重い", r: "おもい", m: "무겁다", y: "기본빈출" },
+    { k: "親指", r: "おやゆび", m: "엄지손가락", y: "기본빈출" },
+    { k: "泳ぐ", r: "およぐ", m: "헤엄치다", y: "기본빈출" },
+    { k: "顔", r: "かお", m: "얼굴", y: "기본빈출" },
+    { k: "帰る", r: "かえる", m: "돌아가다", y: "기본빈출" },
+    { k: "火事", r: "かじ", m: "화재", y: "기본빈출" },
+    { k: "貸す", r: "かす", m: "빌려주다", y: "기본빈출" },
+    { k: "数える", r: "かぞえる", m: "세다", y: "기본빈출" },
+    { k: "家族", r: "かぞく", m: "가족", y: "기본빈출" },
+    { k: "紙", r: "かみ", m: "종이", y: "기본빈출" },
+    { k: "通う", r: "かよう", m: "다니다", y: "기본빈출" },
+    { k: "体", r: "からだ", m: "몸, 신체", y: "기본빈출" },
+    { k: "軽い", r: "かるい", m: "가볍다", y: "기본빈출" },
+    { k: "代わり", r: "かわり", m: "대신", y: "기본빈출" },
+    { k: "考える", r: "かんがえる", m: "생각하다", y: "기본빈출" },
+    { k: "切手", r: "きって", m: "우표", y: "기본빈출" },
+    { k: "決まる", r: "きまる", m: "결정되다", y: "기본빈출" },
+    { k: "着物", r: "きもの", m: "옷, 전통 의상", y: "기본빈출" },
+    { k: "急行", r: "きゅうこう", m: "급행", y: "기본빈출" },
+    { k: "急に", r: "きゅうに", m: "급히, 갑자기", y: "기본빈출" },
+    { k: "教室", r: "きょうしつ", m: "교실", y: "기본빈출" },
+    { k: "去年", r: "きょねん", m: "작년", y: "기본빈출" },
+    { k: "銀行", r: "ぎんこう", m: "은행", y: "기본빈출" },
+    { k: "近所", r: "きんじょ", m: "근처, 이웃", y: "기본빈출" },
+    { k: "空港", r: "くうこう", m: "공항", y: "기본빈출" },
+    { k: "首", r: "くび", m: "목", y: "기본빈출" },
+    { k: "暗い", r: "くらい", m: "어둡다", y: "기본빈출" },
+    { k: "計画", r: "けいかく", m: "계획", y: "기본빈출" },
+    { k: "経験", r: "けいけん", m: "경험", y: "기본빈출" },
+    { k: "県", r: "けん", m: "현 (행정구역)", y: "기본빈출" },
+    { k: "研究", r: "けんきゅう", m: "연구", y: "기본빈출" },
+    { k: "工事", r: "こうじ", m: "공사", y: "기본빈출" },
+    { k: "工場", r: "こうじょう", m: "공장", y: "기본빈출" },
+    { k: "声", r: "こえ", m: "목소리", y: "기본빈출" },
+    { k: "氷", r: "こおり", m: "얼음", y: "기본빈출" },
+    { k: "答える", r: "こたえる", m: "대답하다", y: "기본빈출" },
+    { k: "今度", r: "こんど", m: "이번, 다음", y: "기본빈출" },
+    { k: "寒い", r: "さむい", m: "춥다", y: "기본빈출" },
+    { k: "皿", r: "さら", m: "접시", y: "기본빈출" },
+    { k: "産業", r: "さんぎょう", m: "산업", y: "기본빈출" },
+    { k: "試合", r: "しあい", m: "시합", y: "기본빈출" },
+    { k: "質問", r: "しつもん", m: "질문", y: "기본빈출" },
+    { k: "品物", r: "しなもの", m: "물건", y: "기본빈출" },
+    { k: "自転車", r: "じてんしゃ", m: "자전거", y: "기본빈출" },
+    { k: "死ぬ", r: "しぬ", m: "죽다", y: "기본빈출" },
+    { k: "市民", r: "しみん", m: "시민", y: "기본빈출" },
+    { k: "社会", r: "しゃかい", m: "사회", y: "기본빈출" },
+    { k: "住所", r: "じゅうしょ", m: "주소", y: "기본빈출" },
+    { k: "出発", r: "しゅっぱつ", m: "출발", y: "기본빈출" },
+    { k: "小説", r: "しょうせつ", m: "소설", y: "기본빈출" },
+    { k: "食料品", r: "しょくりょうひん", m: "식료품", y: "기본빈출" },
+    { k: "知る", r: "しる", m: "알다", y: "기본빈출" },
+    { k: "人口", r: "じんこう", m: "인구", y: "기본빈출" },
+    { k: "親切だ", r: "しんせつだ", m: "친절하다", y: "기본빈출" },
+    { k: "新聞社", r: "しんぶんしゃ", m: "신문사", y: "기본빈출" },
+    { k: "水道", r: "すいどう", m: "수도", y: "기본빈출" },
+    { k: "進む", r: "すすむ", m: "나아가다", y: "기본빈출" },
+    { k: "生産", r: "せいさん", m: "생산", y: "기본빈출" },
+    { k: "説明", r: "せつめい", m: "설명", y: "기본빈출" },
+    { k: "世話", r: "せわ", m: "보살핌", y: "기본빈출" },
+    { k: "祖母", r: "そぼ", m: "할머니", y: "기본빈출" },
+    { k: "大使館", r: "たいしかん", m: "대사관", y: "기본빈출" },
+    { k: "台所", r: "だいどころ", m: "부엌", y: "기본빈출" },
+    { k: "建物", r: "たてもの", m: "건물", y: "기본빈출" },
+    { k: "足りない", r: "たりない", m: "모자라다", y: "기본빈출" },
+    { k: "足りる", r: "たりる", m: "충분하다", y: "기본빈출" },
+    { k: "近い", r: "ちかい", m: "가깝다", y: "기본빈출" },
+    { k: "茶色", r: "ちゃいろ", m: "갈색", y: "기본빈출" },
+    { k: "注意", r: "ちゅうい", m: "주의", y: "기본빈출" },
+    { k: "中止", r: "ちゅうし", m: "중지", y: "기본빈출" },
+    { k: "使う", r: "つかう", m: "사용하다", y: "기본빈출" },
+    { k: "着く", r: "つく", m: "도착하다", y: "기본빈출" },
+    { k: "机", r: "つくえ", m: "책상", y: "기본빈출" },
+    { k: "都合", r: "つごう", m: "사정, 형편", y: "기본빈출" },
+    { k: "手紙", r: "てがみ", m: "편지", y: "기본빈출" },
+    { k: "店員", r: "てんいん", m: "점원", y: "기본빈출" },
+    { k: "遠い", r: "とおい", m: "멀다", y: "기본빈출" },
+    { k: "遠く", r: "とおく", m: "멀리", y: "기본빈출" },
+    { k: "通る", r: "とおる", m: "지나다", y: "기본빈출" },
+    { k: "都会", r: "とかい", m: "도시", y: "기본빈출" },
+    { k: "特別だ", r: "とくべつだ", m: "특별하다", y: "기본빈출" },
+    { k: "図書館", r: "としょかん", m: "도서관", y: "기본빈출" },
+    { k: "特急", r: "とっきゅう", m: "특급", y: "기본빈출" },
+    { k: "止まる", r: "とまる", m: "멈추다", y: "기본빈출" },
+    { k: "夏", r: "なつ", m: "여름", y: "기본빈출" },
+    { k: "習う", r: "ならう", m: "배우다", y: "기본빈출" },
+    { k: "何枚", r: "なんまい", m: "몇 장", y: "기본빈출" },
+    { k: "二台", r: "にだい", m: "두 대", y: "기본빈출" },
+    { k: "日記", r: "にっき", m: "일기", y: "기본빈출" },
+    { k: "入院", r: "にゅういん", m: "입원", y: "기본빈출" },
+    { k: "眠い", r: "ねむい", m: "졸리다", y: "기본빈출" },
+    { k: "眠る", r: "ねむる", m: "자다", y: "기본빈출" },
+    { k: "乗る", r: "のる", m: "타다", y: "기본빈출" },
+    { k: "増す", r: "ます", m: "늘다", y: "기본빈출" },
+    { k: "磨く", r: "みがく", m: "닦다", y: "기본빈출" },
+    { k: "昔", r: "むかし", m: "옛날", y: "기본빈출" },
+    { k: "群れ", r: "むれ", m: "무리", y: "기본빈출" },
+    { k: "申し込み", r: "もうしこみ", m: "신청", y: "기본빈출" },
+    { k: "祭り", r: "まつり", m: "축제", y: "기본빈출" },
+    { k: "守る", r: "まもる", m: "지키다", y: "기본빈출" },
+    { k: "湖", r: "みずうみ", m: "호수", y: "기본빈출" },
+    { k: "娘", r: "むすめ", m: "딸", y: "기본빈출" },
+    { k: "明確", r: "めいかく", m: "명확함", y: "기본빈출" },
+    { k: "窓", r: "まど", m: "창문", y: "기본빈출" },
+    { k: "万年筆", r: "まんねんひつ", m: "만년필", y: "기본빈출" },
+    { k: "皆", r: "みな", m: "모두", y: "기본빈출" },
+    { k: "村", r: "むら", m: "마을", y: "기본빈출" },
+    { k: "珍しい", r: "めずらしい", m: "진귀하다", y: "기본빈출" },
+    { k: "辞める", r: "やめる", m: "그만두다", y: "기본빈출" },
+    { k: "喜ぶ", r: "よろこぶ", m: "기뻐하다", y: "기본빈출" },
+    { k: "輪", r: "わ", m: "고리", y: "기본빈출" },
+    { k: "柔らか", r: "やわらか", m: "부드러움", y: "기본빈출" },
+    { k: "沸く", r: "わく", m: "끓다", y: "기본빈출" },
+    { k: "理解", r: "りかい", m: "이해", y: "기본빈출" },
+    { k: "割引", r: "わりびき", m: "할인", y: "기본빈출" }
+];
+
+function hiraganaToKorean(reading) {
+    const digraphs = {
+        'きゃ':'캬','きゅ':'큐','きょ':'쿄','しゃ':'샤','しゅ':'슈','しょ':'쇼',
+        'ちゃ':'차','ちゅ':'츄','ちょ':'쵸','にゃ':'냐','にゅ':'뉴','にょ':'뇨',
+        'ひゃ':'햐','ひゅ':'휴','ひょ':'효','みゃ':'먀','みゅ':'뮤','みょ':'묘',
+        'りゃ':'랴','りゅ':'류','りょ':'료','ぎゃ':'갸','ぎゅ':'규','ぎょ':'교',
+        'じゃ':'쟈','じゅ':'쥬','じょ':'죠','びゃ':'뱌','びゅ':'뷰','びょ':'뵤',
+        'ぴゃ':'퍄','ぴゅ':'퓨','ぴょ':'표'
+    };
+    const monographs = {
+        'あ':'아','い':'이','う':'우','え':'에','お':'오',
+        'か':'카','き':'키','く':'쿠','け':'케','こ':'코',
+        'さ':'사','し':'시','す':'스','せ':'세','そ':'소',
+        'た':'타','ち':'치','つ':'츠','て':'테','と':'토',
+        'な':'나','に':'니','ぬ':'누','ね':'네','の':'노',
+        'は':'하','ひ':'히','ふ':'후','へ':'헤','ほ':'호',
+        'ま':'마','み':'미','む':'무','め':'메','も':'모',
+        'や':'야','ゆ':'유','よ':'요','ら':'라','り':'리',
+        'る':'루','れ':'레','ろ':'로','わ':'와','を':'오','ん':'응',
+        'が':'가','ぎ':'기','ぐ':'구','げ':'게','ご':'고',
+        'ざ':'자','じ':'지','ず':'즈','ぜ':'제','ぞ':'조',
+        'だ':'다','ぢ':'지','づ':'즈','で':'데','ど':'도',
+        'ば':'바','び':'비','ぶ':'부','べ':'베','ぼ':'보',
+        'ぱ':'파','ぴ':'피','ぷ':'푸','ぺ':'페','ぽ':'포',
+        'っ':'으','ー':'-'
+    };
+
+    let result = '';
+    let i = 0;
+    while (i < reading.length) {
+        if (i + 1 < reading.length && digraphs[reading.substring(i, i + 2)]) {
+            result += digraphs[reading.substring(i, i + 2)];
+            i += 2;
+        } else {
+            const ch = reading[i];
+            if (ch === 'っ') result += 'ｯ';
+            else if (ch === 'ん') result += 'ㄴ';
+            else result += monographs[ch] || ch;
+            i++;
+        }
+    }
+    return result.replace(/ｯ/g, 'ㅅ').replace(/ㄴ/g, 'ㄴ');
+}
+
+const STORAGE_KEY = 'JLPT_INTEGRATED_STUDY_STATE_V2';
+let savedUserState = {};
+try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) savedUserState = JSON.parse(raw);
+} catch (e) {
+    console.warn(e);
+}
+
+const mergedMap = new Map();
+RAW_VOCAB_SOURCES.forEach((item) => {
+    const key = `${item.k}_${item.r}`;
+    if (!mergedMap.has(key)) {
+        const userRec = savedUserState[key] || { status: 'unmemorized', fav: false };
+        mergedMap.set(key, {
+            id: key,
+            kanji: item.k,
+            reading: item.r,
+            krPron: hiraganaToKorean(item.r),
+            meaning: item.m,
+            years: [item.y],
+            status: userRec.status || 'unmemorized',
+            fav: !!userRec.fav
+        });
+    } else {
+        const existing = mergedMap.get(key);
+        if (!existing.years.includes(item.y)) {
+            existing.years.push(item.y);
+        }
+    }
+});
+
+const ALL_VOCAB = Array.from(mergedMap.values()).map(word => {
+    const numericYears = word.years.filter(y => /^\d{4}$/.test(y)).sort((a, b) => Number(a) - Number(b));
+    const otherYears = word.years.filter(y => !/^\d{4}$/.test(y));
+    word.years = [...numericYears.reverse(), ...otherYears];
+    word.isDuplicate = word.years.length > 1;
+    if (word.isDuplicate) {
+        const shortLabels = word.years.map(y => /^\d{4}$/.test(y) ? `${y.slice(2)}년` : y);
+        word.dupLabel = `${shortLabels.join('/')} 중복 기출`;
+    } else {
+        word.dupLabel = '';
+    }
+    return word;
+});
+
+function saveStateToStorage() {
+    try {
+        const stateObj = {};
+        ALL_VOCAB.forEach(w => {
+            if (w.status !== 'unmemorized' || w.fav) {
+                stateObj[w.id] = { status: w.status, fav: w.fav };
+            }
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateObj));
+    } catch (e) {
+        console.warn(e);
+    }
+}
+
+let currentTab = 'flashcard';
+let favFilterOnly = false;
+let filteredList = [...ALL_VOCAB];
+let fcIndex = 0;
+let fcReverseMode = false;
+let fcIsFlipped = false;
+let fcHintVisible = false;
+
+let quizDifficulty = 'easy';
+let quizQuestions = [];
+let quizCurrentIdx = 0;
+let quizCorrectCount = 0;
+let quizAnsweredCount = 0;
+let quizAnsweredCurrent = false;
+
+function updateHeaderStats() {
+    const total = ALL_VOCAB.length;
+    const mem = ALL_VOCAB.filter(w => w.status === 'memorized').length;
+    const conf = ALL_VOCAB.filter(w => w.status === 'confusing').length;
+    const unmem = ALL_VOCAB.filter(w => w.status === 'unmemorized').length;
+    const favs = ALL_VOCAB.filter(w => w.fav).length;
+    const dups = ALL_VOCAB.filter(w => w.isDuplicate).length;
+
+    document.getElementById('headerStats').innerHTML = `
+        <div class="stat-pill">📚 통합: ${total}개 (중복 ${dups}개)</div>
+        <div class="stat-pill">⭕ 외움: ${mem}</div>
+        <div class="stat-pill">❓ 헷갈림: ${conf}</div>
+        <div class="stat-pill">📌 미암기: ${unmem}</div>
+        <div class="stat-pill">★ 즐겨찾기: ${favs}</div>
+    `;
+}
+
+function applyFilters() {
+    const yearVal = document.getElementById('yearFilter').value;
+    const statusVal = document.getElementById('statusFilter').value;
+
+    filteredList = ALL_VOCAB.filter(w => {
+        if (yearVal === 'DUP') {
+            if (!w.isDuplicate) return false;
+        } else if (yearVal !== 'ALL') {
+            if (!w.years.includes(yearVal)) return false;
+        }
+        if (statusVal !== 'ALL' && w.status !== statusVal) return false;
+        if (favFilterOnly && !w.fav) return false;
+        return true;
+    });
+
+    fcIndex = 0;
+    fcIsFlipped = false;
+    fcHintVisible = false;
+
+    updateHeaderStats();
+    renderFlashcard();
+    renderVocabTable();
+    startNewQuizSession();
+}
+
+function toggleFavFilter() {
+    favFilterOnly = !favFilterOnly;
+    document.getElementById('favFilterBtn').classList.toggle('active', favFilterOnly);
+    applyFilters();
+}
+
+function switchTab(tabName) {
+    currentTab = tabName;
+    ['flashcard', 'vocab', 'quiz'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('active', t === tabName);
+        document.getElementById(`tabBtn-${t}`).classList.toggle('active', t === tabName);
+    });
+    if (tabName === 'flashcard') renderFlashcard();
+    if (tabName === 'vocab') renderVocabTable();
+    if (tabName === 'quiz' && quizQuestions.length === 0) startNewQuizSession();
+}
+
+function buildBadgesHtml(word) {
+    let html = '';
+    word.years.forEach(y => {
+        const label = /^\d{4}$/.test(y) ? `${y}년 기출` : y;
+        html += `<span class="badge badge-year">${label}</span>`;
+    });
+    if (word.isDuplicate) {
+        html += `<span class="badge badge-dup">🔥 ${word.dupLabel}</span>`;
+    }
+    const statusMap = {
+        memorized: { text: '⭕ 외운 단어', cls: 'badge-status-memorized' },
+        confusing: { text: '❓ 헷갈리는 단어', cls: 'badge-status-confusing' },
+        unmemorized: { text: '📌 미암기', cls: 'badge-status-unmemorized' }
+    };
+    const st = statusMap[word.status];
+    html += `<span class="badge ${st.cls}">${st.text}</span>`;
+    return html;
+}
+
+function renderFlashcard() {
+    const emptyEl = document.getElementById('fcEmptyState');
+    const mainEl = document.getElementById('fcMainArea');
+
+    if (filteredList.length === 0) {
+        emptyEl.style.display = 'block';
+        mainEl.style.display = 'none';
+        document.getElementById('fcProgressFill').style.width = '0%';
+        return;
+    }
+
+    emptyEl.style.display = 'none';
+    mainEl.style.display = 'block';
+
+    if (fcIndex >= filteredList.length) fcIndex = 0;
+    if (fcIndex < 0) fcIndex = filteredList.length - 1;
+
+    const word = filteredList[fcIndex];
+    const cardEl = document.getElementById('fcCard');
+    cardEl.classList.toggle('is-flipped', fcIsFlipped);
+
+    const pct = ((fcIndex + 1) / filteredList.length) * 100;
+    document.getElementById('fcProgressFill').style.width = `${pct}%`;
+    document.getElementById('fcCounter').textContent = `${fcIndex + 1} / ${filteredList.length}`;
+
+    const badgesHtml = buildBadgesHtml(word);
+    document.getElementById('fcFrontBadges').innerHTML = badgesHtml;
+    document.getElementById('fcBackBadges').innerHTML = badgesHtml;
+
+    [document.getElementById('fcFavBtn'), document.getElementById('fcFavBtnBack')].forEach(btn => {
+        btn.textContent = word.fav ? '★' : '☆';
+        btn.classList.toggle('fav-active', word.fav);
+    });
+
+    const frontTextEl = document.getElementById('fcFrontText');
+    const hintContainer = document.getElementById('fcHintContainer');
+    const hintBtn = document.getElementById('fcHintBtn');
+    const hintText = document.getElementById('fcHintText');
+    const backKanjiEl = document.getElementById('fcBackKanji');
+    const backReadingEl = document.getElementById('fcBackReading');
+    const backKrPronEl = document.getElementById('fcBackKrPron');
+    const backMeaningEl = document.getElementById('fcBackMeaning');
+
+    if (!fcReverseMode) {
+        frontTextEl.textContent = word.kanji;
+        frontTextEl.classList.remove('meaning-mode');
+        frontTextEl.classList.add('jp-text');
+        hintContainer.style.display = 'flex';
+        if (fcHintVisible) {
+            hintBtn.style.display = 'none';
+            hintText.style.display = 'inline-block';
+            hintText.textContent = word.reading;
+        } else {
+            hintBtn.style.display = 'inline-block';
+            hintText.style.display = 'none';
+        }
+
+        backKanjiEl.style.display = 'none';
+        backReadingEl.textContent = word.reading;
+        backKrPronEl.textContent = `[${word.krPron}]`;
+        backMeaningEl.textContent = word.meaning;
+        backMeaningEl.style.display = 'block';
+    } else {
+        frontTextEl.textContent = word.meaning;
+        frontTextEl.classList.add('meaning-mode');
+        frontTextEl.classList.remove('jp-text');
+        hintContainer.style.display = 'none';
+
+        backKanjiEl.style.display = 'block';
+        backKanjiEl.textContent = word.kanji;
+        backReadingEl.textContent = word.reading;
+        backKrPronEl.textContent = `[${word.krPron}]`;
+        backMeaningEl.style.display = 'none';
+    }
+
+    document.getElementById('btnStatusMemorized').classList.toggle('active-status', word.status === 'memorized');
+    document.getElementById('btnStatusConfusing').classList.toggle('active-status', word.status === 'confusing');
+    document.getElementById('btnStatusUnmemorized').classList.toggle('active-status', word.status === 'unmemorized');
+}
+
+function toggleFcMode() {
+    fcReverseMode = !fcReverseMode;
+    fcIsFlipped = false;
+    fcHintVisible = false;
+    const btn = document.getElementById('fcModeBtn');
+    btn.innerHTML = !fcReverseMode
+        ? `🔄 표시 모드: <strong>기본 (한자 ➔ 뜻/읽기)</strong>`
+        : `🔄 표시 모드: <strong>역방향 (뜻 ➔ 한자/읽기)</strong>`;
+    renderFlashcard();
+}
+
+function flipCard() {
+    if (filteredList.length === 0) return;
+    fcIsFlipped = !fcIsFlipped;
+    document.getElementById('fcCard').classList.toggle('is-flipped', fcIsFlipped);
+}
+
+function showReadingHint() {
+    if (fcReverseMode || filteredList.length === 0) return;
+    fcHintVisible = true;
+    renderFlashcard();
+}
+
+function prevCard() {
+    if (filteredList.length === 0) return;
+    fcIndex = (fcIndex - 1 + filteredList.length) % filteredList.length;
+    fcIsFlipped = false;
+    fcHintVisible = false;
+    renderFlashcard();
+}
+
+function nextCard() {
+    if (filteredList.length === 0) return;
+    fcIndex = (fcIndex + 1) % filteredList.length;
+    fcIsFlipped = false;
+    fcHintVisible = false;
+    renderFlashcard();
+}
+
+function shuffleFlashcards() {
+    if (filteredList.length <= 1) return;
+    for (let i = filteredList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [filteredList[i], filteredList[j]] = [filteredList[j], filteredList[i]];
+    }
+    fcIndex = 0;
+    fcIsFlipped = false;
+    fcHintVisible = false;
+    renderFlashcard();
+}
+
+function toggleCurrentFav() {
+    if (filteredList.length === 0) return;
+    const word = filteredList[fcIndex];
+    word.fav = !word.fav;
+    saveStateToStorage();
+    updateHeaderStats();
+    if (favFilterOnly && !word.fav) applyFilters();
+    else { renderFlashcard(); renderVocabTable(); }
+}
+
+function setCardStatus(newStatus) {
+    if (filteredList.length === 0) return;
+    const word = filteredList[fcIndex];
+    word.status = newStatus;
+    saveStateToStorage();
+    updateHeaderStats();
+
+    const statusFilterVal = document.getElementById('statusFilter').value;
+    if (statusFilterVal !== 'ALL' && statusFilterVal !== newStatus) applyFilters();
+    else { renderFlashcard(); renderVocabTable(); }
+}
+
+function speakText(text) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'ja-JP';
+    utter.rate = 0.92;
+    window.speechSynthesis.speak(utter);
+}
+
+function speakCurrentCard() {
+    if (filteredList.length === 0) return;
+    speakText(filteredList[fcIndex].reading);
+}
+
+function renderVocabTable() {
+    const query = (document.getElementById('vocabSearchInput')?.value || '').trim().toLowerCase();
+    const tbody = document.getElementById('vocabTableBody');
+
+    const searched = filteredList.filter(w => {
+        if (!query) return true;
+        return (
+            w.kanji.toLowerCase().includes(query) ||
+            w.reading.toLowerCase().includes(query) ||
+            w.krPron.toLowerCase().includes(query) ||
+            w.meaning.toLowerCase().includes(query)
+        );
+    });
+
+    document.getElementById('vocabCountLabel').textContent = `표시 단어: ${searched.length}개`;
+
+    if (searched.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:36px; color:var(--text-sub);">일치하는 단어가 없습니다.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = searched.map(w => {
+        const yearBadges = w.years.map(y => {
+            const label = /^\d{4}$/.test(y) ? `${y}년` : y;
+            return `<span class="badge badge-year" style="margin-right:4px;">${label}</span>`;
+        }).join('');
+        const dupBadge = w.isDuplicate ? `<span class="badge badge-dup">🔥 ${w.dupLabel}</span>` : '';
+
+        return `
+            <tr>
+                <td style="text-align:center;">
+                    <button class="icon-btn ${w.fav ? 'fav-active' : ''}" style="width:32px; height:32px; font-size:1rem; margin:0 auto;" onclick="toggleWordFavById('${w.id}')">
+                        ${w.fav ? '★' : '☆'}
+                    </button>
+                </td>
+                <td class="td-kanji jp-text" lang="ja">
+                    <span style="cursor:pointer;" onclick="speakText('${w.reading}')" title="발음 듣기">${w.kanji} 🔊</span>
+                </td>
+                <td>
+                    <div class="td-reading jp-text" lang="ja">${w.reading}</div>
+                    <div class="td-kr-pron">[${w.krPron}]</div>
+                </td>
+                <td class="td-meaning">${w.meaning}</td>
+                <td>
+                    <div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+                        ${yearBadges}
+                        ${dupBadge}
+                    </div>
+                </td>
+                <td style="text-align:center;">
+                    <div class="mini-status-group">
+                        <button class="mini-status-btn ${w.status === 'memorized' ? 'active-memorized' : ''}" onclick="setWordStatusById('${w.id}', 'memorized')">외움</button>
+                        <button class="mini-status-btn ${w.status === 'confusing' ? 'active-confusing' : ''}" onclick="setWordStatusById('${w.id}', 'confusing')">헷갈림</button>
+                        <button class="mini-status-btn ${w.status === 'unmemorized' ? 'active-unmemorized' : ''}" onclick="setWordStatusById('${w.id}', 'unmemorized')">미암기</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function toggleWordFavById(id) {
+    const word = ALL_VOCAB.find(w => w.id === id);
+    if (!word) return;
+    word.fav = !word.fav;
+    saveStateToStorage();
+    applyFilters();
+}
+
+function setWordStatusById(id, status) {
+    const word = ALL_VOCAB.find(w => w.id === id);
+    if (!word) return;
+    word.status = status;
+    saveStateToStorage();
+    applyFilters();
+}
+
+function generateContextualSentence(word) {
+    const k = word.kanji;
+    const r = word.reading;
+
+    if (/[うくぐすつぬぶむる]$/.test(k) && !['お正月', '都合'].includes(k)) {
+        const templates = [
+            `今回の会議では、いかにして問題を<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>かが議論された。`,
+            `状況に応じて柔軟に<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>ことが求められている。`,
+            `専門家の助言を受けながら、慎重に<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>必要がある。`,
+            `長年の経験を生かして、最後まで諦めずに<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>つもりだ。`
+        ];
+        return templates[k.charCodeAt(0) % templates.length];
+    }
+    if (k.endsWith('い') && k.length >= 2) {
+        const templates = [
+            `昨日と比べて、今日の現場の雰囲気は非常に<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>と感じた。`,
+            `アンケート調査の結果、予想以上に<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>反応が寄せられた。`,
+            `初心者にとっては少し<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>条件かもしれないが、挑戦する価値はある。`
+        ];
+        return templates[k.charCodeAt(0) % templates.length];
+    }
+    if (k.endsWith('に') || k.endsWith('て') || k.endsWith('と') || k.endsWith('く')) {
+        return `予期せぬ事態が発生したため、<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>対応を見直すことになった。`;
+    }
+    const nounTemplates = [
+        `新しい企画を進めるにあたり、<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>に関する最新の報告書を確認した。`,
+        `現代社会において、<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>の重要性がますます高まっている。`,
+        `担当者は今回のプロジェクトにおける<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>について詳しく説明した。`,
+        `ニュース番組で<span class="quiz-target-highlight jp-text" lang="ja">${k}</span>をめぐる特集が放送され、大きな話題となった。`
+    ];
+    return nounTemplates[(k.charCodeAt(0) + r.length) % nounTemplates.length];
+}
+
+function generateHardReadingDistractors(correctReading) {
+    const candidates = new Set();
+    const dakutenPairs = [
+        ['か','が'], ['き','ぎ'], ['く','ぐ'], ['け','げ'], ['こ','ご'],
+        ['さ','ざ'], ['し','じ'], ['す','ず'], ['せ','ぜ'], ['そ','ぞ'],
+        ['た','だ'], ['ち','ぢ'], ['つ','づ'], ['て','で'], ['と','ど'],
+        ['は','ば'], ['ひ','び'], ['ふ','ぶ'], ['へ','べ'], ['ほ','ぼ'],
+        ['ば','ぱ'], ['び','ぴ'], ['ぶ','ぷ'], ['べ','ぺ'], ['ぼ','ぽ']
+    ];
+
+    dakutenPairs.forEach(([a, b]) => {
+        if (correctReading.includes(a)) candidates.add(correctReading.replace(a, b));
+        if (correctReading.includes(b)) candidates.add(correctReading.replace(b, a));
+    });
+
+    if (correctReading.includes('おう')) candidates.add(correctReading.replace('おう', 'お'));
+    if (correctReading.includes('こう')) candidates.add(correctReading.replace('こう', 'こ'));
+    if (correctReading.includes('そう')) candidates.add(correctReading.replace('そう', 'そ'));
+    if (correctReading.includes('とう')) candidates.add(correctReading.replace('とう', 'と'));
+    if (correctReading.includes('よう')) candidates.add(correctReading.replace('よう', 'よ'));
+    if (correctReading.includes('ゅう')) candidates.add(correctReading.replace('ゅう', 'ゅ'));
+    if (correctReading.includes('ょう')) candidates.add(correctReading.replace('ょう', 'ょ'));
+    if (correctReading.includes('えい')) candidates.add(correctReading.replace('えい', 'え'));
+
+    if (!correctReading.includes('う') && correctReading.length >= 2) {
+        const oVowels = ['お','こ','そ','と','の','ほ','も','よ','ろ','ご','ぞ','ど','ぼ'];
+        for (let i = 0; i < correctReading.length; i++) {
+            if (oVowels.includes(correctReading[i])) {
+                candidates.add(correctReading.slice(0, i + 1) + 'う' + correctReading.slice(i + 1));
+            }
+        }
+    }
+
+    if (correctReading.includes('っ')) {
+        candidates.add(correctReading.replace('っ', 'つ'));
+        candidates.add(correctReading.replace('っ', ''));
+    } else if (correctReading.length >= 3) {
+        candidates.add(correctReading[0] + 'っ' + correctReading.slice(1));
+    }
+
+    candidates.delete(correctReading);
+    const resultArr = Array.from(candidates).filter(x => x.length >= 1);
+
+    if (resultArr.length < 3) {
+        const similarLen = ALL_VOCAB.filter(w => w.reading !== correctReading && Math.abs(w.reading.length - correctReading.length) <= 1);
+        for (const w of similarLen) {
+            if (resultArr.length >= 6) break;
+            if (!resultArr.includes(w.reading)) resultArr.push(w.reading);
+        }
+    }
+
+    for (let i = resultArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [resultArr[i], resultArr[j]] = [resultArr[j], resultArr[i]];
+    }
+    return resultArr.slice(0, 3);
+}
+
+function setQuizDifficulty(diff) {
+    quizDifficulty = diff;
+    document.getElementById('diffEasyBtn').classList.toggle('active', diff === 'easy');
+    document.getElementById('diffHardBtn').classList.toggle('active', diff === 'hard');
+    startNewQuizSession();
+}
+
+function startNewQuizSession() {
+    const pool = filteredList.length >= 4 ? [...filteredList] : [...ALL_VOCAB];
+    for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    quizQuestions = pool.map((word, idx) => {
+        const sentenceHtml = generateContextualSentence(word);
+        let promptLabel = '';
+        let correctOption = '';
+        let distractors = [];
+
+        if (quizDifficulty === 'easy') {
+            const askMeaning = idx % 2 === 0;
+            if (askMeaning) {
+                promptLabel = 'Q. 밑줄 친 한자 어휘의 알맞은 [한국어 뜻]을 고르세요.';
+                correctOption = word.meaning;
+                const others = ALL_VOCAB.filter(w => w.meaning !== word.meaning);
+                distractors = [...others].sort(() => Math.random() - 0.5).slice(0, 3).map(w => w.meaning);
+            } else {
+                promptLabel = 'Q. 밑줄 친 한자 어휘의 알맞은 [요미가나(읽기)]를 고르세요.';
+                correctOption = word.reading;
+                const others = ALL_VOCAB.filter(w => w.reading !== word.reading && w.reading[0] !== word.reading[0]);
+                distractors = [...others].sort(() => Math.random() - 0.5).slice(0, 3).map(w => w.reading);
+            }
+        } else {
+            promptLabel = 'Q. [실전 고난도] 밑줄 친 한자의 정확한 요미가나를 고르세요. (장음·탁음 주의)';
+            correctOption = word.reading;
+            distractors = generateHardReadingDistractors(word.reading);
+        }
+
+        const options = [correctOption, ...distractors].sort(() => Math.random() - 0.5);
+        return {
+            word,
+            sentenceHtml,
+            promptLabel,
+            options,
+            correctIndex: options.indexOf(correctOption)
+        };
+    });
+
+    quizCurrentIdx = 0;
+    quizCorrectCount = 0;
+    quizAnsweredCount = 0;
+    quizAnsweredCurrent = false;
+    updateQuizScoreUI();
+    renderCurrentQuizQuestion();
+}
+
+function updateQuizScoreUI() {
+    const pct = quizAnsweredCount === 0 ? 0 : Math.round((quizCorrectCount / quizAnsweredCount) * 100);
+    document.getElementById('quizScoreBadge').textContent = `정답률: ${quizCorrectCount} / ${quizAnsweredCount} (${pct}%)`;
+}
+
+function renderCurrentQuizQuestion() {
+    const container = document.getElementById('quizMainArea');
+    if (quizQuestions.length === 0) {
+        container.innerHTML = `<div class="empty-state">출제할 단어가 없습니다.</div>`;
+        return;
+    }
+
+    if (quizCurrentIdx >= quizQuestions.length) {
+        const pct = Math.round((quizCorrectCount / quizQuestions.length) * 100);
+        container.innerHTML = `
+            <div style="text-align:center; padding:30px 10px;">
+                <h2 style="font-size:1.8rem; color:var(--primary); margin-bottom:12px;">🎉 모든 문제를 풀었습니다!</h2>
+                <p style="font-size:1.15rem; font-weight:700; margin-bottom:20px;">
+                    총 ${quizQuestions.length}문제 중 <span style="color:var(--success);">${quizCorrectCount}문제 정답</span> (${pct}%)
+                </p>
+                <button class="nav-btn" style="max-width:280px; background:var(--primary); color:white;" onclick="startNewQuizSession()">
+                    🔄 다시 풀기
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    const q = quizQuestions[quizCurrentIdx];
+    const badgesHtml = buildBadgesHtml(q.word);
+
+    container.innerHTML = `
+        <div class="quiz-meta" style="display:flex; justify-content:space-between; margin-bottom:16px;">
+            <div class="badges-wrap">${badgesHtml}</div>
+            <div style="font-weight:800; color:var(--text-sub);">문제 ${quizCurrentIdx + 1} / ${quizQuestions.length}</div>
+        </div>
+
+        <div class="quiz-sentence-box">
+            <div class="quiz-prompt-label" style="font-size:0.9rem; color:var(--text-sub); margin-bottom:10px; font-weight:600;">${q.promptLabel}</div>
+            <div class="quiz-sentence jp-text" lang="ja">${q.sentenceHtml}</div>
+        </div>
+
+        <div class="quiz-options-grid">
+            ${q.options.map((opt, idx) => `
+                <button class="quiz-opt-btn jp-text" id="quizOpt-${idx}" onclick="submitQuizAnswer(${idx})" lang="ja">
+                    <span style="color:var(--primary);">${idx + 1}.</span>
+                    <span>${opt}</span>
+                </button>
+            `).join('')}
+        </div>
+
+        <div class="quiz-feedback-box" id="quizFeedbackBox"></div>
+    `;
+}
+
+function submitQuizAnswer(selectedIdx) {
+    if (quizAnsweredCurrent) return;
+    quizAnsweredCurrent = true;
+    quizAnsweredCount++;
+
+    const q = quizQuestions[quizCurrentIdx];
+    const isCorrect = selectedIdx === q.correctIndex;
+
+    if (isCorrect) {
+        quizCorrectCount++;
+    } else {
+        q.word.status = 'confusing';
+        saveStateToStorage();
+        updateHeaderStats();
+    }
+
+    q.options.forEach((_, idx) => {
+        const btn = document.getElementById(`quizOpt-${idx}`);
+        btn.disabled = true;
+        if (idx === q.correctIndex) btn.classList.add('correct');
+        else if (idx === selectedIdx && !isCorrect) btn.classList.add('wrong');
+    });
+
+    updateQuizScoreUI();
+
+    const fbBox = document.getElementById('quizFeedbackBox');
+    fbBox.classList.add('show');
+    fbBox.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+                <div style="font-size:1.1rem; font-weight:800; color:${isCorrect ? 'var(--success)' : 'var(--danger)'}; margin-bottom:6px;">
+                    ${isCorrect ? '⭕ 정답입니다!' : '❌ 오답입니다! (자동으로 [❓ 헷갈리는 단어]에 등록되었습니다)'}
+                </div>
+                <div style="font-size:1rem; color:var(--text-main);">
+                    <strong>정답 해설:</strong>
+                    <span class="jp-text" style="font-size:1.2rem; font-weight:800; margin-left:6px;" lang="ja">${q.word.kanji}</span>
+                    <span class="jp-text" style="color:var(--primary); font-weight:800; margin-left:6px;" lang="ja">${q.word.reading}</span>
+                    <span style="color:var(--text-sub); font-size:0.9rem;">[${q.word.krPron}]</span>
+                    — <strong>${q.word.meaning}</strong>
+                    <button class="mini-status-btn" style="margin-left:8px;" onclick="speakText('${q.word.reading}')">🔊 발음 듣기</button>
+                </div>
+            </div>
+            <button class="nav-btn" style="flex:0 0 auto; background:var(--primary); color:white; padding:10px 22px;" onclick="nextQuizQuestion()">
+                다음 문제 ▶
+            </button>
+        </div>
+    `;
+}
+
+function nextQuizQuestion() {
+    quizCurrentIdx++;
+    quizAnsweredCurrent = false;
+    renderCurrentQuizQuestion();
+}
+
+document.addEventListener('keydown', (e) => {
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+
+    // 전역 다크모드 단축키 (D)
+    if (e.key === 'd' || e.key === 'D' || e.key === 'ㅇ') {
+        e.preventDefault();
+        toggleDarkMode();
+        return;
+    }
+
+    if (currentTab === 'flashcard') {
+        if (e.code === 'Space' || e.code === 'Enter') {
+            e.preventDefault();
+            flipCard();
+        } else if (e.code === 'ArrowLeft') {
+            e.preventDefault();
+            prevCard();
+        } else if (e.code === 'ArrowRight') {
+            e.preventDefault();
+            nextCard();
+        } else if (e.key === 'h' || e.key === 'H' || e.key === 'ㅗ') {
+            e.preventDefault();
+            showReadingHint();
+        } else if (e.key === '1') {
+            e.preventDefault();
+            setCardStatus('memorized');
+        } else if (e.key === '2') {
+            e.preventDefault();
+            setCardStatus('confusing');
+        } else if (e.key === '3') {
+            e.preventDefault();
+            setCardStatus('unmemorized');
+        } else if (e.key === 's' || e.key === 'S' || e.key === 'ㄴ') {
+            e.preventDefault();
+            toggleCurrentFav();
+        }
+    }
+});
+
+function resetAllUserData() {
+    if (!confirm('저장된 모든 암기 상태와 즐겨찾기 기록을 초기화할까요?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    ALL_VOCAB.forEach(w => {
+        w.status = 'unmemorized';
+        w.fav = false;
+    });
+    applyFilters();
+}
+
+// 초기 테마 및 데이터 로드
+initDarkMode();
+applyFilters();
+</script>
+</body>
+</html>
